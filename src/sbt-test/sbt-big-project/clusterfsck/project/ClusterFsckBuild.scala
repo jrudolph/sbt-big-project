@@ -5,8 +5,8 @@ import sbt._
 import Keys._
 import Def.Initialize
 
-import fommil.BigProjectPlugin
-import fommil.BigProjectKeys
+//import fommil.BigProjectPlugin
+//import fommil.BigProjectKeys
 
 /**
  * Example large project structure. Specific challenges:
@@ -57,23 +57,24 @@ object ClusterFsckBuild extends Build {
       // sidenote, it'd be nice if dependsOn could take a Seq
       depNames.foldLeft(Project(name, file(name))) {
         case (p, d) => p.dependsOn(LocalProject(d))
-      }.enablePlugins(BigProjectPlugin).settings(
+      }/*.enablePlugins(BigProjectPlugin).settings(
         // install BigProjectPlugin
         BigProjectPlugin.overrideProjectSettings(Compile),
         BigProjectPlugin.overrideProjectSettings(Test)
-      ).settings(
+      )*/.settings(
           // install the test instrumentation
           inConfig(Compile)(testInstrumentation),
           inConfig(Test)(testInstrumentation)
         ).settings(
             // install the custom `scripted' tasks
-            scriptedTasks
+            scriptedTasks,
+            updateOptions := updateOptions.value.withCachedResolution(true)
           )
   }.map { proj =>
     // generate the project
     createSources(proj.id)
     // customise individual Projects
-    proj.id match {
+    /*proj.id match {
       case "obf--1788614413" => proj.settings(
         BigProjectKeys.eclipseTestsFor := Some(LocalProject("obf-518286142"))
       )
@@ -81,7 +82,8 @@ object ClusterFsckBuild extends Build {
         BigProjectKeys.eclipseTestsFor := Some(LocalProject("obf-1770460346"))
       )
       case _ => proj
-    }
+    }*/
+    proj
   }
 
   ///////////////////////////////////////////////////////////////////////////
